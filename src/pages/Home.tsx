@@ -1,25 +1,26 @@
-import { auth, firebase } from "../services/firebase";
 import { useHistory } from "react-router-dom";
+
 import illustrationImg from "../assets/images/illustration.svg";
 import logoImg from "../assets/images/logo.svg";
 import googleIconImg from "../assets/images/google-icon.svg";
-import "../styles/auth.scss";
+
 import { Button } from "../components/Button";
+import { useAuth } from "../hooks/useAuth";
+
+import "../styles/auth.scss";
 
 export function Home() {
   const history = useHistory();
+  const { user, signInWithGoogle } = useAuth();
 
   //Quando clicarem no botão de login com o Google, chamaremos essa função:
-  function handleCreateRoom() {
-    //autenticação com o Google
-    const provider = new firebase.auth.GoogleAuthProvider();
+  async function handleCreateRoom() {
+    if (!user) {
+      await signInWithGoogle();
+    }
 
-    auth.signInWithPopup(provider).then((result) => {
-      console.log(result);
-
-      //rota em que o usuário será direcionado depois do login
-      history.push("/rooms/new");
-    });
+    //rota em que o usuário será direcionado depois do login
+    history.push("/rooms/new");
   }
 
   return (
